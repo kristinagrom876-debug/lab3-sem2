@@ -15,6 +15,7 @@ namespace MatrixCalculator {
     private int SizeOne;
     private int SizeTwo;
     private int First;
+    private int EvenDivisor;
 
     private int _size;
     private double[,] _data;
@@ -34,6 +35,7 @@ namespace MatrixCalculator {
       SizeTwo = 2;
       First = 1;
       One = 1.0;
+      EvenDivisor = 2;
     }
 
     public SquareMatrix(int matrixSize) : this()
@@ -85,6 +87,7 @@ namespace MatrixCalculator {
 
     public static SquareMatrix operator *(SquareMatrix left, SquareMatrix right)
     {
+      double sum;
       if (left._size != right._size)
       {
         throw new MatrixException("Error: matrices have different sizes.");
@@ -96,7 +99,6 @@ namespace MatrixCalculator {
       {
         for (int colIndex = 0; colIndex < left._size; ++colIndex)
         {
-          double sum;
           sum = 0.0;
           for (int inner = 0; inner < left._size; ++inner)
           {
@@ -230,7 +232,7 @@ namespace MatrixCalculator {
         }
 
         double sign;
-        if (colIndex % 2 == 0)
+        if (colIndex % EvenDivisor == 0)
         {
           sign = PositiveSign;
         }
@@ -293,7 +295,7 @@ namespace MatrixCalculator {
           }
 
           double sign;
-          if ((rowIndex + colIndex) % 2 == 0)
+          if ((rowIndex + colIndex) % EvenDivisor == 0)
           {
             sign = PositiveSign;
           }
