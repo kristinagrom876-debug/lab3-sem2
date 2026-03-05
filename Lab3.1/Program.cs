@@ -2,6 +2,16 @@
 
 namespace MatrixCalculator {
   class Program {
+    private static int OpExit = 0;
+    private static int OpAdd = 1;
+    private static int OpMultiply = 2;
+    private static int OpDetA = 3;
+    private static int OpDetB = 4;
+    private static int OpCompare = 5;
+    private static int OpInvA = 6;
+    private static int OpInvB = 7;
+    private static int OpDemo = 8;
+
     static void Main(string[] args)
     {
       try
@@ -50,27 +60,27 @@ namespace MatrixCalculator {
             Console.Write("Choose operation: ");
             userChoice = int.Parse(Console.ReadLine());
 
-            if (userChoice == 1)
+            if (userChoice == OpAdd)
             {
               resultMatrix = firstMatrix + secondMatrix;
               Console.WriteLine("\nA + B:");
               Console.WriteLine(resultMatrix.ToString());
             }
-            else if (userChoice == 2)
+            else if (userChoice == OpMultiply)
             {
               resultMatrix = firstMatrix * secondMatrix;
               Console.WriteLine("\nA * B:");
               Console.WriteLine(resultMatrix.ToString());
             }
-            else if (userChoice == 3)
+            else if (userChoice == OpDetA)
             {
               Console.WriteLine("\nDeterminant of A: " + firstMatrix.Determinant().ToString("F4"));
             }
-            else if (userChoice == 4)
+            else if (userChoice == OpDetB)
             {
               Console.WriteLine("\nDeterminant of B: " + secondMatrix.Determinant().ToString("F4"));
             }
-            else if (userChoice == 5)
+            else if (userChoice == OpCompare)
             {
               Console.WriteLine("\nComparison Results:");
               Console.WriteLine("A > B: " + (firstMatrix > secondMatrix));
@@ -79,19 +89,19 @@ namespace MatrixCalculator {
               Console.WriteLine("A != B: " + (firstMatrix != secondMatrix));
               Console.WriteLine("CompareTo: " + firstMatrix.CompareTo(secondMatrix));
             }
-            else if (userChoice == 6)
+            else if (userChoice == OpInvA)
             {
               inverseMatrix = firstMatrix.Inverse();
               Console.WriteLine("\nInverse of A:");
               Console.WriteLine(inverseMatrix.ToString());
             }
-            else if (userChoice == 7)
+            else if (userChoice == OpInvB)
             {
               inverseMatrix = secondMatrix.Inverse();
               Console.WriteLine("\nInverse of B:");
               Console.WriteLine(inverseMatrix.ToString());
             }
-            else if (userChoice == 8)
+            else if (userChoice == OpDemo)
             {
               Console.WriteLine("\n CLASS METHODS DEMONSTRATION ");
               Console.WriteLine("Equals: " + firstMatrix.Equals(secondMatrix));
@@ -104,7 +114,7 @@ namespace MatrixCalculator {
               Console.WriteLine("Original equals clone: " + firstMatrix.Equals(clonedMatrix));
             }
           }
-          catch (MatrixException error)
+          catch (SquareMatrix.MatrixException error)
           {
             Console.WriteLine("Matrix Error: " + error.Message);
           }
@@ -113,9 +123,9 @@ namespace MatrixCalculator {
             Console.WriteLine("Unexpected Error: " + error.Message);
           }
 
-        } while (userChoice != 0);
+        } while (userChoice != OpExit);
       }
-      catch (MatrixException error)
+      catch (SquareMatrix.MatrixException error)
       {
         Console.WriteLine("Matrix Error during initialization: " + error.Message);
       }

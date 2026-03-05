@@ -2,8 +2,14 @@
 
 namespace MatrixCalculator {
   class SquareMatrix {
+    public class MatrixException : Exception {
+      public MatrixException(string message) : base(message) { }
+    }
     private static double _epsilon = 1e-10;
     private static int _hashMultiplier = 31;
+    private int HashScaleFactor = 1000;   
+    private int SizeOne = 1;               
+    private int SizeTwo = 2;               
 
     private int _size;
     private double[,] _data;
@@ -20,13 +26,14 @@ namespace MatrixCalculator {
     public void InputMatrix()
     {
       Console.WriteLine("Enter matrix elements:");
-      for (int row = 0; row < _size; ++row)
+      for (int rowIndex = 0; rowIndex < _size; ++rowIndex)
       {
-        for (int col = 0; col < _size; ++col)
+        for (int colIndex = 0; colIndex < _size; ++colIndex)
         {
-          Console.Write($"Element [{row}][{col}]: ");
-          string input = Console.ReadLine();
-          _data[row, col] = double.Parse(input);
+          Console.Write($"Element [{rowIndex}][{colIndex}]: ");
+          string input;
+          input = Console.ReadLine();
+          _data[rowIndex, colIndex] = double.Parse(input);
         }
       }
     }
@@ -36,11 +43,11 @@ namespace MatrixCalculator {
       if (left._size != right._size)
         throw new MatrixException("Error: matrices have different sizes.");
 
-      var result = new SquareMatrix(left._size);
+      SquareMatrix result = new SquareMatrix(left._size);
 
-      for (int row = 0; row < left._size; ++row)
-        for (int col = 0; col < left._size; ++col)
-          result._data[row, col] = left._data[row, col] + right._data[row, col];
+      for (int rowIndex = 0; rowIndex < left._size; ++rowIndex)
+        for (int colIndex = 0; colIndex < left._size; ++colIndex)
+          result._data[rowIndex, colIndex] = left._data[rowIndex, colIndex] + right._data[rowIndex, colIndex];
 
       return result;
     }
@@ -48,18 +55,21 @@ namespace MatrixCalculator {
     public static SquareMatrix operator *(SquareMatrix left, SquareMatrix right)
     {
       if (left._size != right._size)
-        throw new MatrixException("Error: matrices have different sizes.");
-
-      var result = new SquareMatrix(left._size);
-
-      for (int row = 0; row < left._size; ++row)
       {
-        for (int col = 0; col < left._size; ++col)
+        throw new MatrixException("Error: matrices have different sizes.");
+      }
+
+      SquareMatrix result = new SquareMatrix(left._size);
+
+      for (int rowIndex = 0; rowIndex < left._size; ++rowIndex)
+      {
+        for (int colIndex = 0; colIndex < left._size; ++colIndex)
         {
-          double sum = 0.0;
+          double sum;
+          sum = 0.0;
           for (int inner = 0; inner < left._size; ++inner)
-            sum += left._data[row, inner] * right._data[inner, col];
-          result._data[row, col] = sum;
+            sum += left._data[rowIndex, inner] * right._data[inner, colIndex];
+          result._data[rowIndex, colIndex] = sum;
         }
       }
       return result;
@@ -68,24 +78,32 @@ namespace MatrixCalculator {
     public static bool operator >(SquareMatrix left, SquareMatrix right)
     {
       if (left._size != right._size)
+      {
         throw new MatrixException("Error: matrices have different sizes.");
+      }
 
-      double leftDet = left.Determinant();
-      double rightDet = right.Determinant();
+      double leftDet;
+      double rightDet;
+      leftDet = left.Determinant();
+      rightDet = right.Determinant();
       return leftDet > rightDet;
     }
 
     public static bool operator <(SquareMatrix left, SquareMatrix right)
     {
       if (left._size != right._size)
+      {
         throw new MatrixException("Error: matrices have different sizes.");
+      }
 
-      double leftDet = left.Determinant();
-      double rightDet = right.Determinant();
+      double leftDet;
+      double rightDet;
+      leftDet = left.Determinant();
+      rightDet = right.Determinant();
       return leftDet < rightDet;
     }
 
-    public static bool operator ==(SquareMatrix left, SquareMatrix right)
+    public static bool operator == (SquareMatrix left, SquareMatrix right)
     {
       if (ReferenceEquals(left, null) && ReferenceEquals(right, null))
         return true;
@@ -96,60 +114,67 @@ namespace MatrixCalculator {
       if (left._size != right._size)
         return false;
 
-      for (int row = 0; row < left._size; ++row)
-        for (int col = 0; col < left._size; ++col)
-          if (Math.Abs(left._data[row, col] - right._data[row, col]) > _epsilon)
+      for (int rowIndex = 0; rowIndex < left._size; ++rowIndex)
+        for (int colIndex = 0; colIndex < left._size; ++colIndex)
+          if (Math.Abs(left._data[rowIndex, colIndex] - right._data[rowIndex, colIndex]) > _epsilon)
             return false;
 
       return true;
     }
 
-    public static bool operator !=(SquareMatrix left, SquareMatrix right) => !(left == right);
+    public static bool operator != (SquareMatrix left, SquareMatrix right) => !(left == right);
 
     public override bool Equals(object obj)
     {
-      var other = obj as SquareMatrix;
+      SquareMatrix other = obj as SquareMatrix;
       return this == other;
     }
 
     public override int GetHashCode()
     {
-      int hash = _size;
+      int hash;
+      hash = _size;
 
-      for (int row = 0; row < _size; ++row)
-        for (int col = 0; col < _size; ++col)
-          hash = hash * _hashMultiplier + (int)(_data[row, col] * 1000);
+      for (int rowIndex = 0; rowIndex < _size; ++rowIndex)
+        for (int colIndex = 0; colIndex < _size; ++colIndex)
+          hash = hash * _hashMultiplier + (int)(_data[rowIndex, colIndex] * HashScaleFactor);
 
       return hash;
     }
 
     public double Determinant()
     {
-      if (_size == 1)
+      if (_size == SizeOne)
         return _data[0, 0];
 
-      if (_size == 2)
+      if (_size == SizeTwo)
         return _data[0, 0] * _data[1, 1] - _data[0, 1] * _data[1, 0];
 
-      double det = 0.0;
+      double det;
+      det = 0.0;
 
-      for (int col = 0; col < _size; ++col)
+      for (int colIndex = 0; colIndex < _size; ++colIndex)
       {
-        var sub = new SquareMatrix(_size - 1);
+        SquareMatrix sub = new SquareMatrix(_size - 1);
 
-        for (int row = 1; row < _size; ++row)
+        for (int rowIndex = 1; rowIndex < _size; ++rowIndex)
         {
-          int subCol = 0;
+          int subCol;
+          subCol = 0;
           for (int origCol = 0; origCol < _size; ++origCol)
           {
-            if (origCol == col) continue;
-            sub._data[row - 1, subCol] = _data[row, origCol];
+            if (origCol == colIndex)
+            {
+              continue;
+            }
+            sub._data[rowIndex - 1, subCol] = _data[rowIndex, origCol];
             ++subCol;
           }
         }
 
-        double sign = (col % 2 == 0) ? 1.0 : -1.0;
-        det += sign * _data[0, col] * sub.Determinant();
+        double sign;
+        sign = (colIndex % 2 == 0) ? 1.0 : -1.0;
+        det += sign * _data[0, colIndex] * sub.Determinant();
       }
 
       return det;
@@ -157,34 +182,43 @@ namespace MatrixCalculator {
 
     public SquareMatrix Inverse()
     {
-      double det = Determinant();
+      double det;
+      det = Determinant();
 
       if (Math.Abs(det) < _epsilon)
         throw new MatrixException("Error: matrix is singular. Inverse does not exist.");
 
-      var result = new SquareMatrix(_size);
+      SquareMatrix result = new SquareMatrix(_size);
 
-      if (_size == 1)
+      if (_size == SizeOne)
       {
         result._data[0, 0] = 1.0 / _data[0, 0];
         return result;
       }
 
-      for (int row = 0; row < _size; ++row)
+      for (int rowIndex = 0; rowIndex < _size; ++rowIndex)
       {
-        for (int col = 0; col < _size; ++col)
+        for (int colIndex = 0; colIndex < _size; ++colIndex)
         {
-          var sub = new SquareMatrix(_size - 1);
-          int subRow = 0;
+          SquareMatrix sub = new SquareMatrix(_size - 1);
+          int subRow;
+          subRow = 0;
 
           for (int origRow = 0; origRow < _size; ++origRow)
           {
-            if (origRow == row) continue;
+            if (origRow == rowIndex)
+            {
+              continue;
+            }
 
-            int subCol = 0;
+            int subCol;
+            subCol = 0;
             for (int origCol = 0; origCol < _size; ++origCol)
             {
-              if (origCol == col) continue;
+              if (origCol == colIndex)
+              {
+                continue;
+              }
 
               sub._data[subRow, subCol] = _data[origRow, origCol];
               ++subCol;
@@ -192,9 +226,13 @@ namespace MatrixCalculator {
             ++subRow;
           }
 
-          double sign = ((row + col) % 2 == 0) ? 1.0 : -1.0;
+          double sign;
+          if ((rowIndex + colIndex) % 2 == 0)
+            sign = 1.0;
+          else
+            sign = -1.0;
           double cofactor = sign * sub.Determinant();
-          result._data[col, row] = cofactor / det; 
+          result._data[colIndex, rowIndex] = cofactor / det;
         }
       }
 
@@ -210,33 +248,34 @@ namespace MatrixCalculator {
       double otherDet = other.Determinant();
 
       if (Math.Abs(thisDet - otherDet) < _epsilon)
-        return 0;
-
-      return thisDet < otherDet ? -1 : 1;
+      if (thisDet < otherDet) return -1;
+      if (thisDet > otherDet) return 1;
+      return 0;
     }
 
     public bool Equals(SquareMatrix other) => this == other;
 
     public SquareMatrix Clone()
     {
-      var clone = new SquareMatrix(_size);
+      SquareMatrix clone = new SquareMatrix(_size);
       Array.Copy(_data, clone._data, _data.Length);
       return clone;
     }
 
     public override string ToString()
     {
-      string result = $"[{_size}x{_size}]:\n";
+      string results;
+      results = $"[{_size}x{_size}]:\n";
 
-      for (int row = 0; row < _size; ++row)
+      for (int rowIndex = 0; rowIndex < _size; ++rowIndex)
       {
-        result += "[ ";
-        for (int col = 0; col < _size; ++col)
-          result += _data[row, col].ToString("F2") + " ";
-        result += "]\n";
+        results += "[ ";
+        for (int colIndex = 0; colIndex < _size; ++colIndex)
+          results += _data[rowIndex, colIndex].ToString("F2") + " ";
+        results += "]\n";
       }
 
-      return result;
+      return results;
     }
   }
 }
