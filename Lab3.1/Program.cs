@@ -2,15 +2,28 @@
 
 namespace MatrixCalculator {
   class Program {
-    private static int OpExit = 0;
-    private static int OpAdd = 1;
-    private static int OpMultiply = 2;
-    private static int OpDetA = 3;
-    private static int OpDetB = 4;
-    private static int OpCompare = 5;
-    private static int OpInvA = 6;
-    private static int OpInvB = 7;
-    private static int OpDemo = 8;
+    private static int OpExit;
+    private static int OpAdd;
+    private static int OpMultiply;
+    private static int OpDetA;
+    private static int OpDetB;
+    private static int OpCompare;
+    private static int OpInvA;
+    private static int OpInvB;
+    private static int OpDemo;
+
+    static Program() 
+    {
+      OpExit = 0;
+      OpAdd = 1;
+      OpMultiply = 2;
+      OpDetA = 3;
+      OpDetB = 4;
+      OpCompare = 5;
+      OpInvA = 6;
+      OpInvB = 7;
+      OpDemo = 8;
+    }
 
     static void Main(string[] args)
     {
